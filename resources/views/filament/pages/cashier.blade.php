@@ -31,7 +31,7 @@
         </div>
 
         {{-- Tambahkan wire:ignore.self untuk modal agar tidak re-render --}}
-        <x-filament::modal wire:ignore.self width="xl">
+        <x-filament::modal wire:ignore.self width="xl" id="checkout">
             <x-slot name="trigger">
                 <x-filament::button size="lg">
                     Checkout

@@ -5,8 +5,9 @@ namespace App\Filament\Pages;
 use App\Models\Payment;
 use App\Models\Product;
 use Filament\Pages\Page;
-use Filament\Notifications\Notification;
+use App\Models\Transaction;
 use Illuminate\Support\Collection;
+use Filament\Notifications\Notification;
 use Illuminate\Validation\ValidationException;
 
 class Cashier extends Page
@@ -97,19 +98,44 @@ class Cashier extends Page
     public function createTransaction()
     {
         try {
-            $this->validate(
-                [
-                    'paymentSelected' => 'exists:payments,id|required',
-                    'cart' => 'required',
-                    'cart.*.id' => 'exists:products,id'
-                ]
-            );
-        } catch (ValidationException $e) {
+            // Validasi inputan
+            $this->validate([
+                'paymentSelected' => 'exists:payments,id|required',
+                'cart' => 'required|array',
+                'cart.*.id' => 'exists:products,id'
+            ]);
+
+            // Buat transaksi baru
+            $transaction = Transaction::create([
+                'payment_id' => $this->paymentSelected,
+                'total' => $this->getTotalPrice()
+            ]);
+
+            // Tambahkan produk ke transaksi
+            foreach ($this->cart as $item) {
+                // Perhatikan penggunaan detil produk seperti qty dan subtotal
+                $transaction->products()->attach($item['id'], [
+                    'qty' => $item['qty'],
+                    'subtotal' => $item['price'] * $item['qty'],
+                ]);
+            }
+
+            // Berikan notifikasi sukses
             Notification::make()
-                ->title('errors')
+                ->title('Transaction Created Successfully')
+                ->success()
+                ->send();
+
+            $this->cart->empty();
+        } catch (ValidationException $e) {
+            // Tangani error validasi
+            Notification::make()
+                ->title('Error')
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
+        } finally {
+            $this->dispatch('close-modal', id: 'checkout');
         }
     }
 }
