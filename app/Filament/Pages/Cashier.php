@@ -6,6 +6,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use Filament\Pages\Page;
 use App\Models\Transaction;
+use App\Events\TransactionCreated;
 use Illuminate\Support\Collection;
 use Filament\Notifications\Notification;
 use Illuminate\Validation\ValidationException;
@@ -120,13 +121,16 @@ class Cashier extends Page
                 ]);
             }
 
+            event(new TransactionCreated($transaction));
+
             // Berikan notifikasi sukses
             Notification::make()
                 ->title('Transaction Created Successfully')
                 ->success()
                 ->send();
 
-            $this->cart->empty();
+            $this->cart = collect();
+            $this->reset('paymentSelected');
         } catch (ValidationException $e) {
             // Tangani error validasi
             Notification::make()
