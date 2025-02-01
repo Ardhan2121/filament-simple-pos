@@ -2,10 +2,12 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Payment;
 use App\Models\Product;
 use Filament\Pages\Page;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 
 class Cashier extends Page
 {
@@ -13,10 +15,13 @@ class Cashier extends Page
     protected static string $view = 'filament.pages.cashier';
 
     public $products;
+    public $payments;
+    public $paymentSelected;
     public Collection $cart;
 
     public function mount()
     {
+        $this->payments = Payment::all();
         $this->products = Product::all();
         $this->cart = collect(); // Tetap pakai Collection
     }
@@ -87,5 +92,24 @@ class Cashier extends Page
     public function getTotalPrice()
     {
         return $this->cart->sum(fn ($item) => $item['price'] * $item['qty']);
+    }
+
+    public function createTransaction()
+    {
+        try {
+            $this->validate(
+                [
+                    'paymentSelected' => 'exists:payments,id|required',
+                    'cart' => 'required',
+                    'cart.*.id' => 'exists:products,id'
+                ]
+            );
+        } catch (ValidationException $e) {
+            Notification::make()
+                ->title('errors')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
     }
 }

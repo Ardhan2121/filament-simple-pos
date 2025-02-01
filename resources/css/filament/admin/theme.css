@@ -1,11 +1,3 @@
 @import '/vendor/filament/filament/resources/css/theme.css';
 
 @config 'tailwind.config.js';
-
-.fi-topbar {
-    @apply !z-0
-}
-
-.fi-modal-window {
-    @apply !z-20
-}
