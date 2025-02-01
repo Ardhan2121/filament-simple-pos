@@ -64,7 +64,7 @@ class ProductResource extends Resource
                     ->toggleable(),
                 ImageColumn::make('image')
                     ->label('Image')
-                    ->size('md')
+                    ->size(50)
                     ->circular()
                     ->toggleable(),
                 TextColumn::make('name')
@@ -83,11 +83,17 @@ class ProductResource extends Resource
                 TextColumn::make('stock')
                     ->label('Stock')
                     ->badge()
-                    ->color(fn (Product $product) => $product->stock > 0 ? 'success' : 'danger')
+                    ->color(function (Product $product) {
+                        if ($product->stock > 10) {
+                            return 'success';
+                        } elseif ($product->stock > 0) {
+                            return 'warning';
+                        }
+                        return 'danger';
+                    })
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
-
             ])
             ->filters([
                 //
