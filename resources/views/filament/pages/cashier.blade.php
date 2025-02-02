@@ -2,9 +2,9 @@
     {{-- Product List --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-[90px] z-0">
         @foreach ($products as $product)
-            <div class="bg-white p-5 rounded-lg {{ $this->isProductInCart($product->id) ? 'border-2 border-primary-300' : '' }}" wire:key="product-{{ $product->id }}">
+            <div class="bg-white p-5 rounded-lg {{ $this->isProductInCart($product->id) ? 'border-2 border-primary-300' : '' }} dark:bg-gray-800" wire:key="product-{{ $product->id }}">
                 <div class="flex items-center gap-4">
-                    <img src="{{ $product->image }}" alt="{{ $product->name }}" class="size-16 object-cover rounded-lg">
+                    <img src="{{ $product->image ? Storage::url($product->image) : 'https://placehold.co/400' }}" alt="{{ $product->name }}" class="size-16 object-cover rounded-lg">
                     <div class="flex-1">
                         <h5 class="text-sm">{{ $product->name }}</h5>
                         <p class="text-lg font-bold">@money($product->price)</p>
@@ -24,7 +24,7 @@
     </div>
 
     {{-- Checkout --}}
-    <div class="fixed bottom-0 left-0 right-0 p-4 bg-white flex items-center border-t z-40">
+    <div class="fixed bottom-0 left-0 right-0 p-4 bg-white flex items-center border-t z-40 dark:bg-gray-800 dark:border-gray-700">
         <div class="flex-1">
             <p>Total Amount</p>
             <p class="text-2xl font-bold">@money($this->getTotalPrice())</p>
@@ -54,7 +54,7 @@
                             <span>{{ $c['qty'] }} x @money($c['price'])</span>
                         </div>
                     @empty
-                        <div class="min-h-24 w-full rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center">
+                        <div class="min-h-24 w-full rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center dark:bg-gray-700 dark:text-gray-300">
                             No Items
                         </div>
                     @endforelse
@@ -66,7 +66,7 @@
                         @foreach ($payments as $payment)
                             <div>
                                 <input class="sr-only peer" type="radio" id="{{ $payment->id }}" name="payment" wire:model="paymentSelected" value="{{ $payment->id }}">
-                                <label class="flex border p-5 rounded-lg peer-checked:border-primary-600 " for="{{ $payment->id }}">{{ $payment->name }}</label>
+                                <label class="flex border p-5 rounded-lg peer-checked:border-primary-600 dark:border-gray-600" for="{{ $payment->id }}">{{ $payment->name }}</label>
                             </div>
                         @endforeach
                     </div>

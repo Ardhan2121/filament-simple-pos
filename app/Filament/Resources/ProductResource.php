@@ -65,6 +65,7 @@ class ProductResource extends Resource
                 ImageColumn::make('image')
                     ->label('Image')
                     ->size(50)
+                    ->default('https://placehold.co/400')
                     ->circular()
                     ->toggleable(),
                 TextColumn::make('name')
