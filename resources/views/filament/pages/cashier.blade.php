@@ -9,7 +9,7 @@
                         <h5 class="text-sm">{{ $product->name }}</h5>
                         <p class="text-lg font-bold">@money($product->price)</p>
                     </div>
-                    <div>
+                    <div class="flex flex-nowrap items-center">
                         @if ($this->isProductInCart($product->id))
                             <x-filament::button outlined color="gray" wire:click="removeFromCart({{ $product->id }})">-</x-filament::button>
                             <span class="px-2">{{ $this->getProductQtyInCart($product->id) }}</span>

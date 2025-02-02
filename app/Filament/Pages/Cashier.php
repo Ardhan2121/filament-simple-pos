@@ -39,22 +39,35 @@ class Cashier extends Page
             return;
         }
 
-        $this->cart = $this->cart->map(function ($item) use ($id, $product) {
-            if ($item['id'] === $id) {
-                if ($item['qty'] < $product->stock) {
-                    $item['qty'] += 1;
-                } else {
-                    Notification::make()
-                        ->title('Not enough stock')
-                        ->danger()
-                        ->send();
-                }
-            }
-            return $item;
-        });
+        // Validasi stok di awal
+        if ($product->stock <= 0) {
+            Notification::make()
+                ->title('Product is out of stock')
+                ->danger()
+                ->send();
+            return;
+        }
 
-        // Jika produk belum ada di keranjang, tambahkan
-        if (!$this->cart->contains('id', $id)) {
+        // Cek apakah produk sudah ada di keranjang
+        $existingItem = $this->cart->firstWhere('id', $id);
+        if ($existingItem) {
+            // Jika sudah ada, cek apakah penambahan melebihi stok
+            if ($existingItem['qty'] >= $product->stock) {
+                Notification::make()
+                    ->title('Not enough stock')
+                    ->danger()
+                    ->send();
+                return;
+            }
+
+            $this->cart = $this->cart->map(function ($item) use ($id) {
+                if ($item['id'] === $id) {
+                    $item['qty'] += 1;
+                }
+                return $item;
+            });
+        } else {
+            // Jika belum ada di keranjang, tambahkan sebagai item baru
             $this->cart->push([
                 'id' => $product->id,
                 'name' => $product->name,

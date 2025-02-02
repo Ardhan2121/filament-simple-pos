@@ -19,6 +19,11 @@ class Transaction extends Model
         return $this->belongsTo(Payment::class);
     }
 
+    public function stockHistories()
+    {
+        return $this->hasMany(StockHistory::class);
+    }
+
 
     public static function boot()
     {

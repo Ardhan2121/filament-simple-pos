@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
+            ->darkMode(false)
             ->colors([
                 'primary' => Color::Indigo,
             ])

@@ -25,4 +25,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Transaction::class, 'detail_transaction')->withPivot('qty', 'subtotal');
     }
+
+    public function stockHistories()
+    {
+        return $this->hasMany(StockHistory::class);
+    }
 }
